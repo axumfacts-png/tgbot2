@@ -28,7 +28,11 @@ async def show_lang_select(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         kb.append(row)
     text = "🌍 Please select your language / እባክዎ ቋንቋዎን ይምረጡ / Afaan filadhaa / ቋንቋኻ ምረጽ"
     if update.callback_query:
-        await update.callback_query.edit_message_text(text, reply_markup=InlineKeyboardMarkup(kb))
+        try:
+            await update.callback_query.edit_message_text(text, reply_markup=InlineKeyboardMarkup(kb))
+        except TelegramError as e:
+            logger.warning(f"Failed to edit message: {e}. Sending new message instead.")
+            await update.callback_query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(kb))
     else:
         await update.message.reply_text(text, reply_markup=InlineKeyboardMarkup(kb))
 
@@ -169,7 +173,10 @@ async def show_user_menu(update: Update, ctx: ContextTypes.DEFAULT_TYPE, lang: s
     )
     markup = InlineKeyboardMarkup(kb)
     if update.callback_query:
-        await update.callback_query.edit_message_text(text, reply_markup=markup)
+        try:
+            await update.callback_query.edit_message_text(text, reply_markup=markup)
+        except TelegramError as e:
+            logger.warning(f"Failed to edit menu message: {e}")
     else:
         await update.message.reply_text(text, reply_markup=markup)
 
@@ -213,7 +220,10 @@ async def show_referral_menu(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         f"{t(lang, 'referral_link', link=ref_link)}\n\n"
         f"{t(lang, 'share_text')}"
     )
-    await q.edit_message_text(text, reply_markup=InlineKeyboardMarkup(kb), parse_mode="Markdown")
+    try:
+        await q.edit_message_text(text, reply_markup=InlineKeyboardMarkup(kb), parse_mode="Markdown")
+    except TelegramError as e:
+        logger.warning(f"Failed to edit referral menu: {e}")
 
 # ── Check joined callback ──────────────────────────────────────────────────────
 async def check_joined_callback(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
@@ -228,7 +238,10 @@ async def check_joined_callback(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         ctx.bot, user_id, data.get("required_channel_id") or channel
     )
     if joined:
-        await q.edit_message_text(t(lang, "joined_confirm"))
+        try:
+            await q.edit_message_text(t(lang, "joined_confirm"))
+        except TelegramError:
+            pass
         await show_user_menu(update, ctx, lang)
     else:
         await q.answer(t(lang, "not_joined"), show_alert=True)
@@ -253,10 +266,13 @@ async def submit_screenshot_callback(update: Update, ctx: ContextTypes.DEFAULT_T
 
     user["awaiting"] = "screenshot"
     save_user(data, user_id, user)
-    await q.edit_message_text(
-        t(lang, "screenshot_prompt"),
-        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("❌ Cancel", callback_data="referral_menu")]]),
-    )
+    try:
+        await q.edit_message_text(
+            t(lang, "screenshot_prompt"),
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("❌ Cancel", callback_data="referral_menu")]]),
+        )
+    except TelegramError as e:
+        logger.warning(f"Failed to edit screenshot prompt: {e}")
 
 async def handle_screenshot(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     """User sends a photo as screenshot proof."""
@@ -340,10 +356,13 @@ async def request_withdraw_callback(update: Update, ctx: ContextTypes.DEFAULT_TY
 
     user["awaiting"] = "withdraw_number"
     save_user(data, user_id, user)
-    await q.edit_message_text(
-        t(lang, "withdraw_prompt"),
-        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("❌ Cancel", callback_data="referral_menu")]]),
-    )
+    try:
+        await q.edit_message_text(
+            t(lang, "withdraw_prompt"),
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("❌ Cancel", callback_data="referral_menu")]]),
+        )
+    except TelegramError as e:
+        logger.warning(f"Failed to edit withdraw prompt: {e}")
 
 async def handle_withdraw_number(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
@@ -406,3 +425,4 @@ async def handle_new_member(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
             )
         except Exception as e:
             logger.warning(f"Welcome message failed: {e}")
+
