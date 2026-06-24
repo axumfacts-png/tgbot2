@@ -17,7 +17,7 @@ DEFAULT_DATA = {
 
     # Groups & channels
     "groups": [],
-    "required_channel_username": "@mychannel",
+    "required_channel_username": "@OfficialNovaDrop",
     "required_channel_id": 0,
 
     # Schedule
