@@ -133,7 +133,7 @@ STRINGS = {
         "screenshot_prompt":"📸 أرسل لقطة شاشة التثبيت الآن. سيراجعها المسؤول.",
         "screenshot_sent":  "✅ تم إرسال لقطة الشاشة! سيراجعها المسؤول قريباً.",
         "withdraw_btn":     "💸 طلب سحب",
-        "withdraw_prompt":  "💸 أدخل رقم Telebirr/CBE الخاص بك:",
+        "withdraw_prompt":  "💸 أدخل رقم Binance/Telebirr/CBE الخاص بك:",
         "withdraw_min":     "❌ الحد الأدنى للسحب هو 400 ETB (10 إحالات).",
         "withdraw_sent":    "✅ تم إرسال طلب السحب! سيعالجه المسؤول.",
         "lang_select":      "🌍 اختر لغتك:",
