@@ -6,8 +6,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 ADMIN_IDS = [int(x) for x in os.environ.get("ADMIN_IDS", "").split(",") if x.strip()]
-REFERRAL_AMOUNT   = 40
-MIN_WITHDRAW      = 400
+REFERRAL_AMOUNT   = 10
+MIN_WITHDRAW      = 100
 MIN_REFERRALS     = 10
 
 def is_admin(user_id: int) -> bool:
