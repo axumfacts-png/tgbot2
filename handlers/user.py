@@ -213,15 +213,16 @@ async def show_referral_menu(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         kb.append([InlineKeyboardButton(t(lang, "withdraw_btn"), callback_data="request_withdraw")])
     kb.append([InlineKeyboardButton("⬅️ " + t(lang, "main_menu"), callback_data="user_menu")])
 
+    # Build text without Markdown to avoid parsing errors
     text = (
-        f"💰 *{t(lang, 'referral_menu')}*\n\n"
+        f"💰 {t(lang, 'referral_menu')}\n\n"
         f"{t(lang, 'balance', balance=balance)}\n"
         f"{t(lang, 'referrals_count', count=refs)}\n\n"
         f"{t(lang, 'referral_link', link=ref_link)}\n\n"
         f"{t(lang, 'share_text')}"
     )
     try:
-        await q.edit_message_text(text, reply_markup=InlineKeyboardMarkup(kb), parse_mode="Markdown")
+        await q.edit_message_text(text, reply_markup=InlineKeyboardMarkup(kb))
     except TelegramError as e:
         logger.warning(f"Failed to edit referral menu: {e}")
 
@@ -393,12 +394,11 @@ async def handle_withdraw_number(update: Update, ctx: ContextTypes.DEFAULT_TYPE)
             ]
             await ctx.bot.send_message(
                 admin_id,
-                f"💸 *Withdrawal Request*\n\n"
+                f"💸 Withdrawal Request\n\n"
                 f"👤 {name} (ID: {user_id})\n"
                 f"💵 Amount: {user.get('balance', 0)} ETB\n"
-                f"📱 Payment number: `{number}`",
+                f"📱 Payment number: {number}",
                 reply_markup=InlineKeyboardMarkup(kb),
-                parse_mode="Markdown",
             )
         except Exception as e:
             logger.error(f"Failed to notify admin: {e}")
